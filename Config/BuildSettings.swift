@@ -99,10 +99,10 @@ final class BuildSettings: NSObject {
     }
     
     /// Default identity server
-    static let serverConfigDefaultIdentityServerUrlString = "https://vector.im"
+    static let serverConfigDefaultIdentityServerUrlString = ""
         
     static var serverConfigSygnalAPIUrlString: String {
-        MDMSettings.serverConfigSygnalAPIUrlString ?? "https://matrix.org/_matrix/push/v1/notify"
+        MDMSettings.serverConfigSygnalAPIUrlString ?? "https://12-vm.mooo.com/_matrix/push/v1/notify"
     }
     
     // MARK: - Legal URLs
@@ -151,7 +151,7 @@ final class BuildSettings: NSObject {
         return false
         #endif
     }
-    static let stunServerFallbackUrlString: String? = "stun:turn.matrix.org"
+    static let stunServerFallbackUrlString: String? = nil
     
     // MARK: -  Public rooms Directory
     // List of homeservers for the public rooms directory
@@ -182,21 +182,21 @@ final class BuildSettings: NSObject {
     
     #if DEBUG
     /// The configuration to use for analytics during development. Set `isEnabled` to false to disable analytics in debug builds.
-    static let analyticsConfiguration = AnalyticsConfiguration(isEnabled: BuildSettings.baseBundleIdentifier.starts(with: "im.vector.app"),
-                                                               host: "https://posthog.element.dev",
-                                                               apiKey: "phc_VtA1L35nw3aeAtHIx1ayrGdzGkss7k1xINeXcoIQzXN",
-                                                               termsURL: URL(string: "https://element.io/cookie-policy")!)
+    static let analyticsConfiguration = AnalyticsConfiguration(isEnabled: false,
+                                                           host: "https://posthog.element.dev",
+                                                           apiKey: "phc_VtA1L35nw3aeAtHIx1ayrGdzGkss7k1xINeXcoIQzXN",
+                                                           termsURL: URL(string: "https://element.io/cookie-policy")!)
     #else
     /// The configuration to use for analytics. Set `isEnabled` to false to disable analytics.
-    static let analyticsConfiguration = AnalyticsConfiguration(isEnabled: BuildSettings.baseBundleIdentifier.starts(with: "im.vector.app"),
-                                                               host: "https://posthog.element.io",
-                                                               apiKey: "phc_Jzsm6DTm6V2705zeU5dcNvQDlonOR68XvX2sh1sEOHO",
-                                                               termsURL: URL(string: "https://element.io/cookie-policy")!)
+    static let analyticsConfiguration = AnalyticsConfiguration(isEnabled: false,
+                                                           host: "https://posthog.element.io",
+                                                           apiKey: "phc_Jzsm6DTm6V2705zeU5dcNvQDlonOR68XvX2sh1sEOHO",
+                                                           termsURL: URL(string: "https://element.io/cookie-policy")!)
     #endif
     
     
     // MARK: - Bug report
-    static let bugReportEndpointUrlString = "https://rageshakes.element.io/api"
+    static let bugReportEndpointUrlString = ""
     // Use the name allocated by the bug report server
     static let bugReportApplicationId = "riot-ios"
     static let bugReportUISIId = "element-auto-uisi"
