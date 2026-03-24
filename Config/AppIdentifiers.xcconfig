@@ -19,7 +19,7 @@
 BUNDLE_DISPLAY_NAME = Element Fork
 BASE_BUNDLE_IDENTIFIER = org.digital-res.matrix
 APPLICATION_GROUP_IDENTIFIER = group.org.digital-res
-APPLICATION_SCHEME = element-neoclassic
+APPLICATION_SCHEME = element-fork
 
 // Team
 DEVELOPMENT_TEAM = 7J4U792NQT
