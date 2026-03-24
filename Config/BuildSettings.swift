@@ -461,7 +461,7 @@ final class BuildSettings: NSObject {
     /// The presence of this setting acts as a feature flag to show marketing banners for the app
     /// when it is detected that the homeserver is running Matrix 2.0. Set this to `nil` until you
     /// are ready to migrate your users.
-    static let replacementApp: ReplacementApp? = .init()
+    static let replacementApp: ReplacementApp? = nil
     
     // MARK: - Verification Required Banner
     
