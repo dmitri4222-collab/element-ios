@@ -40,7 +40,7 @@ jobs:
 
       # ── 3. Brew tools (xcodegen, etc.) ────────────────────────────────────
       - name: Install Brew dependencies
-        run: brew bundle --no-lock
+        run: brew bundle --no-upgrade
 
       # ── 4. CocoaPods cache ────────────────────────────────────────────────
       - name: Cache CocoaPods
