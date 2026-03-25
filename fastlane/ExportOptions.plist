@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+
+  <!-- Distribution method -->
+  <key>method</key>
+  <string>app-store</string>
+
+  <!-- Your Apple Developer Team ID — replace with actual value -->
+  <key>teamID</key>
+  <string>7J4U792NQT</string>
+
+  <!-- Manual signing -->
+  <key>signingStyle</key>
+  <string>manual</string>
+
+  <!--
+    Map each Bundle ID to its provisioning profile NAME
+    (must match the name shown in Apple Developer Portal)
+  -->
+  <key>provisioningProfiles</key>
+  <dict>
+    <key>org.digital.matrix</key>
+    <string>ElementFork AppStore Distribution</string>
+
+    <key>org.digital.matrix.nse</key>
+    <string>ElementFork NSE AppStore Distribution</string>
+
+    <key>org.digital.matrix.shareextension</key>
+    <string>ElementFork Share AppStore Distribution</string>
+
+    <key>org.digital.matrix.broadcast</key>
+    <string>ElementFork Broadcast AppStore Distribution</string>
+  </dict>
+
+  <!-- Strip Swift symbols to reduce IPA size -->
+  <key>stripSwiftSymbols</key>
+  <true/>
+
+  <!-- Upload symbols to Apple for crash reporting -->
+  <key>uploadSymbols</key>
+  <true/>
+
+  <!-- Upload bitcode (disabled — not needed for modern Xcode) -->
+  <key>compileBitcode</key>
+  <false/>
+
+</dict>
+</plist>
