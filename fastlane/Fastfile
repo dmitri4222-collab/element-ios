@@ -1,6 +1,5 @@
 default_platform(:ios)
 
-# ─── Constants ────────────────────────────────────────────────────────────────
 WORKSPACE       = "Riot.xcworkspace"
 SCHEME          = "Riot"
 CONFIGURATION   = "Release"
@@ -9,7 +8,6 @@ ARCHIVE_PATH    = "build/ElementFork.xcarchive"
 EXPORT_PATH     = "build/ElementFork"
 EXPORT_PLIST    = "fastlane/ExportOptions.plist"
 
-# ─── App Store Connect API key (injected via env from GitHub Secrets) ─────────
 def asc_api_key
   app_store_connect_api_key(
     key_id:        ENV["ASC_KEY_ID"],
@@ -20,56 +18,69 @@ def asc_api_key
   )
 end
 
-# ─── Lanes ────────────────────────────────────────────────────────────────────
 platform :ios do
 
-  # Build + archive + upload to TestFlight in one lane
   desc "Build, archive and upload to TestFlight"
   lane :testflight_upload do
+
+    # Пропускаем загрузку если нет API ключа
+    unless ENV["ASC_KEY_ID"]
+      UI.important "ASC_KEY_ID не задан — только сборка без загрузки"
+      gym(
+        workspace:        WORKSPACE,
+        scheme:           SCHEME,
+        configuration:    CONFIGURATION,
+        clean:            true,
+        archive_path:     ARCHIVE_PATH,
+        export_method:    "app-store",
+        export_options:   EXPORT_PLIST,
+        output_directory: EXPORT_PATH,
+        output_name:      "ElementFork",
+        xcargs:           "CODE_SIGN_STYLE=Manual"
+      )
+      next
+    end
+
     api_key = asc_api_key
 
-    # Archive
     gym(
-      workspace:      WORKSPACE,
-      scheme:         SCHEME,
-      configuration:  CONFIGURATION,
-      clean:          true,
-      archive_path:   ARCHIVE_PATH,
-      export_method:  "app-store",
-      export_options: EXPORT_PLIST,
+      workspace:        WORKSPACE,
+      scheme:           SCHEME,
+      configuration:    CONFIGURATION,
+      clean:            true,
+      archive_path:     ARCHIVE_PATH,
+      export_method:    "app-store",
+      export_options:   EXPORT_PLIST,
       output_directory: EXPORT_PATH,
-      output_name:    "ElementFork",
-      # Disable automatic signing — profiles installed in previous CI step
-      xcargs: "CODE_SIGN_STYLE=Manual"
+      output_name:      "ElementFork",
+      xcargs:           "CODE_SIGN_STYLE=Manual"
     )
 
-    # Upload to TestFlight (skip submission to review, just distribute to testers)
     pilot(
-      api_key:                    api_key,
-      app_identifier:             BUNDLE_ID,
-      ipa:                        "#{EXPORT_PATH}/ElementFork.ipa",
+      api_key:                           api_key,
+      app_identifier:                    BUNDLE_ID,
+      ipa:                               "#{EXPORT_PATH}/ElementFork.ipa",
       skip_waiting_for_build_processing: true,
-      skip_submission:            true,
-      distribute_external:        false,
-      notify_external_testers:    false,
-      changelog:                  "CI build ##{ENV['GITHUB_RUN_NUMBER']} from branch #{ENV['GITHUB_REF_NAME']}"
+      skip_submission:                   true,
+      distribute_external:               false,
+      notify_external_testers:           false,
+      changelog:                         "CI build ##{ENV['GITHUB_RUN_NUMBER']} from branch #{ENV['GITHUB_REF_NAME']}"
     )
   end
 
-  # Local-only: just archive without uploading (useful for testing the build)
   desc "Archive only (no upload)"
   lane :archive_only do
     gym(
-      workspace:      WORKSPACE,
-      scheme:         SCHEME,
-      configuration:  CONFIGURATION,
-      clean:          true,
-      archive_path:   ARCHIVE_PATH,
-      export_method:  "app-store",
-      export_options: EXPORT_PLIST,
+      workspace:        WORKSPACE,
+      scheme:           SCHEME,
+      configuration:    CONFIGURATION,
+      clean:            true,
+      archive_path:     ARCHIVE_PATH,
+      export_method:    "app-store",
+      export_options:   EXPORT_PLIST,
       output_directory: EXPORT_PATH,
-      output_name:    "ElementFork",
-      xcargs: "CODE_SIGN_STYLE=Manual"
+      output_name:      "ElementFork",
+      xcargs:           "CODE_SIGN_STYLE=Manual"
     )
     UI.success "Archive saved to #{ARCHIVE_PATH}"
   end
