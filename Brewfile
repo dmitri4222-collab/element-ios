@@ -1,2 +1,3 @@
 brew "mint"
-brew "getsentry/tools/sentry-cli"
+brew "xcodegen"
+brew "cocoapods"
