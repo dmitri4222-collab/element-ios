@@ -120,12 +120,38 @@ jobs:
           agvtool new-version -all ${{ github.run_number }}
 
       # ── 10. Build & Archive via Fastlane ──────────────────────────────────
-      - name: Fastlane — build & upload
+      - name: Build & Archive
+        run: |
+          xcodebuild \
+            -workspace Riot.xcworkspace \
+            -scheme Riot \
+            -configuration Release \
+            -archivePath build/ElementFork.xcarchive \
+            CODE_SIGN_STYLE=Manual \
+            archive
+
+      - name: Export IPA
+        run: |
+          xcodebuild \
+            -exportArchive \
+            -archivePath build/ElementFork.xcarchive \
+            -exportPath build/ElementFork \
+            -exportOptionsPlist fastlane/ExportOptions.plist
+
+      - name: Upload to TestFlight
+        if: ${{ secrets.ASC_KEY_ID != '' }}
         env:
-          ASC_KEY_ID:        ${{ secrets.ASC_KEY_ID }}
-          ASC_ISSUER_ID:     ${{ secrets.ASC_ISSUER_ID }}
-          ASC_KEY_BASE64:    ${{ secrets.ASC_KEY_BASE64 }}
-        run: fastlane testflight_upload
+          ASC_KEY_ID:     ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID:  ${{ secrets.ASC_ISSUER_ID }}
+          ASC_KEY_BASE64: ${{ secrets.ASC_KEY_BASE64 }}
+        run: |
+          echo "$ASC_KEY_BASE64" | base64 --decode -o /tmp/asc_key.p8
+          xcrun altool --upload-app \
+            --type ios \
+            --file build/ElementFork/ElementFork.ipa \
+            --apiKey "$ASC_KEY_ID" \
+            --apiIssuer "$ASC_ISSUER_ID" \
+            --privateKeyPath /tmp/asc_key.p8
 
       # ── 11. Cleanup keychain ───────────────────────────────────────────────
       - name: Cleanup keychain
