@@ -139,7 +139,7 @@ jobs:
             -exportOptionsPlist fastlane/ExportOptions.plist
 
       - name: Upload to TestFlight
-        if: ${{ secrets.ASC_KEY_ID != '' }}
+        if: ${{ env.ASC_KEY_ID != '' }}
         env:
           ASC_KEY_ID:     ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID:  ${{ secrets.ASC_ISSUER_ID }}
