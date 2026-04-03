@@ -74,12 +74,8 @@ jobs:
           security list-keychains -d user -s "$KEYCHAIN_NAME" login.keychain
 
           # Decode and import .p12
-          echo "$DIST_CERT_BASE64" | base64 --decode -o /tmp/dist_cert.p12
-          file /tmp/dist_cert.p12
-          echo "Password length: ${#DIST_CERT_PASSWORD}"
-          ls -la /tmp/dist_cert.p12
+          echo "$DIST_CERT_BASE64" | tr -d '\r\n' | base64 --decode -o /tmp/dist_cert.p12
           security import /tmp/dist_cert.p12 \
-          xxd /tmp/dist_cert.p12 | head -3
             -k "$KEYCHAIN_NAME" \
             -P "$DIST_CERT_PASSWORD" \
             -T /usr/bin/codesign \
