@@ -79,6 +79,7 @@ jobs:
           echo "Password length: ${#DIST_CERT_PASSWORD}"
           ls -la /tmp/dist_cert.p12
           security import /tmp/dist_cert.p12 \
+          xxd /tmp/dist_cert.p12 | head -3
             -k "$KEYCHAIN_NAME" \
             -P "$DIST_CERT_PASSWORD" \
             -T /usr/bin/codesign \
