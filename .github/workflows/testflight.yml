@@ -76,6 +76,7 @@ jobs:
           # Decode and import .p12
           echo "$DIST_CERT_BASE64" | base64 --decode -o /tmp/dist_cert.p12
           file /tmp/dist_cert.p12
+          ls -la /tmp/dist_cert.p12
           security import /tmp/dist_cert.p12 \
             -k "$KEYCHAIN_NAME" \
             -P "$DIST_CERT_PASSWORD" \
