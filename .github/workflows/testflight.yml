@@ -63,7 +63,6 @@ jobs:
 
       # ── 7. Import Distribution Certificate into temp keychain ─────────────
       - name: Import signing certificate
-        if: false
         env:
           DIST_CERT_BASE64:    ${{ secrets.DIST_CERT_BASE64 }}
           DIST_CERT_PASSWORD:  ${{ secrets.DIST_CERT_PASSWORD }}
@@ -88,7 +87,6 @@ jobs:
 
       # ── 8. Install Provisioning Profiles ──────────────────────────────────
       - name: Install provisioning profiles
-        if: false
         env:
           # Each secret is a base64-encoded .mobileprovision file
           PP_MAIN:       ${{ secrets.PP_MAIN }}
