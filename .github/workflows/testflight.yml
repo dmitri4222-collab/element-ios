@@ -61,10 +61,11 @@ jobs:
       - name: Pod install
         run: pod install --repo-update
 
-      # ── 7. Import Distribution Certificate into temp keychain ─────────────
+     # ── 7. Import Distribution Certificate into temp keychain ─────────────
       - name: Import signing certificate
         env:
-          DIST_CERT_BASE64:    ${{ secrets.DIST_CERT_BASE64 }}
+          DIST_CERT_PEM:       ${{ secrets.DIST_CERT_PEM }}
+          DIST_KEY_PEM:        ${{ secrets.DIST_KEY_PEM }}
           DIST_CERT_PASSWORD:  ${{ secrets.DIST_CERT_PASSWORD }}
         run: |
           # Create temporary keychain
@@ -73,8 +74,18 @@ jobs:
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
           security list-keychains -d user -s "$KEYCHAIN_NAME" login.keychain
 
-          # Decode and import .p12
-          echo "$DIST_CERT_BASE64" | tr -d '\r\n' | base64 --decode -o /tmp/dist_cert.p12
+          # Write cert and key from secrets
+          echo "$DIST_CERT_PEM" > /tmp/dist_cert.pem
+          echo "$DIST_KEY_PEM" > /tmp/dist_key.pem
+
+          # Create .p12 on macOS runner
+          openssl pkcs12 -export \
+            -out /tmp/dist_cert.p12 \
+            -inkey /tmp/dist_key.pem \
+            -in /tmp/dist_cert.pem \
+            -passout pass:$DIST_CERT_PASSWORD
+
+          # Import into keychain
           security import /tmp/dist_cert.p12 \
             -k "$KEYCHAIN_NAME" \
             -P "$DIST_CERT_PASSWORD" \
