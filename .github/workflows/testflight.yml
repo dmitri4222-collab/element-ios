@@ -97,22 +97,10 @@ jobs:
           PP_BROADCAST:  ${{ secrets.PP_BROADCAST }}
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-
-          install_profile() {
-            local b64="$1"
-            local uuid
-            echo "$b64" | base64 --decode -o /tmp/profile_tmp.mobileprovision
-            uuid=$(/usr/libexec/PlistBuddy -c 'Print :UUID' \
-              /dev/stdin <<< $(security cms -D -i /tmp/profile_tmp.mobileprovision))
-            cp /tmp/profile_tmp.mobileprovision \
-              ~/Library/MobileDevice/Provisioning\ Profiles/"$uuid".mobileprovision
-            echo "Installed profile UUID: $uuid"
-          }
-
-          install_profile "$PP_MAIN"
-          install_profile "$PP_NSE"
-          install_profile "$PP_SHARE"
-          install_profile "$PP_BROADCAST"
+          echo "$PP_MAIN"      | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/main.mobileprovision
+          echo "$PP_NSE"       | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/nse.mobileprovision
+          echo "$PP_SHARE"     | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/share.mobileprovision
+          echo "$PP_BROADCAST" | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/broadcast.mobileprovision
 
       # ── 9. Increment build number (= GitHub run number) ───────────────────
       - name: Set build number
