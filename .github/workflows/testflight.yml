@@ -120,23 +120,14 @@ jobs:
 
       # ── 10. Build & Archive via Fastlane ──────────────────────────────────
       - name: Build & Archive
-        env:
-          ASC_KEY_ID:     ${{ secrets.ASC_KEY_ID }}
-          ASC_ISSUER_ID:  ${{ secrets.ASC_ISSUER_ID }}
-          ASC_KEY_BASE64: ${{ secrets.ASC_KEY_BASE64 }}
         run: |
-          echo "$ASC_KEY_BASE64" | base64 --decode -o /tmp/asc_key.p8
           xcodebuild \
             -workspace Riot.xcworkspace \
             -scheme Riot \
             -configuration Release \
             -destination "generic/platform=iOS" \
             -archivePath build/ElementFork.xcarchive \
-            -authenticationKeyPath /tmp/asc_key.p8 \
-            -authenticationKeyID "$ASC_KEY_ID" \
-            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
-            CODE_SIGN_STYLE=Automatic \
-            DEVELOPMENT_TEAM=7J4U792NQT \
+            CODE_SIGN_STYLE=Manual \
             archive
 
       - name: Export IPA
