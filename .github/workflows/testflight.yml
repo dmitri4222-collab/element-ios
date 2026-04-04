@@ -72,6 +72,7 @@ jobs:
           security set-keychain-settings -lut 21600 "$KEYCHAIN_NAME"
           security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
           security list-keychains -d user -s "$KEYCHAIN_NAME" ~/Library/Keychains/login.keychain-db
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
           echo "$DIST_CERT_PEM" > /tmp/dist_cert.pem
           echo "$DIST_KEY_PEM" > /tmp/dist_key.pem
           openssl pkcs12 -export \
