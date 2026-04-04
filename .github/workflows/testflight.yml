@@ -68,10 +68,6 @@ jobs:
           DIST_KEY_PEM:        ${{ secrets.DIST_KEY_PEM }}
           DIST_CERT_PASSWORD:  ${{ secrets.DIST_CERT_PASSWORD }}
         run: |
-          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
-          security set-keychain-settings -lut 21600 "$KEYCHAIN_NAME"
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
-          security list-keychains -d user -s "$KEYCHAIN_NAME" ~/Library/Keychains/login.keychain-db
           echo "$DIST_CERT_PEM" > /tmp/dist_cert.pem
           echo "$DIST_KEY_PEM" > /tmp/dist_key.pem
           openssl pkcs12 -export \
@@ -80,11 +76,11 @@ jobs:
             -in /tmp/dist_cert.pem \
             -passout pass:$DIST_CERT_PASSWORD
           security import /tmp/dist_cert.p12 \
-            -k "$KEYCHAIN_NAME" \
+            -k ~/Library/Keychains/login.keychain-db \
             -P "$DIST_CERT_PASSWORD" \
             -T /usr/bin/codesign \
             -T /usr/bin/xcodebuild
-          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+          security set-key-partition-list -S apple-tool:,apple: -s -k "" ~/Library/Keychains/login.keychain-db
           security find-identity -v -p codesigning
 
       # ── 8. Install Provisioning Profiles ──────────────────────────────────
