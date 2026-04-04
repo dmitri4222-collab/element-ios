@@ -114,6 +114,8 @@ post_install do |installer|
       # Stop Xcode 12 complaining about old IPHONEOS_DEPLOYMENT_TARGET from pods
       config.build_settings.delete 'IPHONEOS_DEPLOYMENT_TARGET'
       # Disable code signing for pods
+      config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
+      config.build_settings['CODE_SIGNING_REQUIRED'] = 'NO'
       # Disable nullability checks
       config.build_settings['WARNING_CFLAGS'] ||= ['$(inherited)','-Wno-nullability-completeness']
       config.build_settings['OTHER_SWIFT_FLAGS'] ||= ['$(inherited)', '-Xcc', '-Wno-nullability-completeness']
