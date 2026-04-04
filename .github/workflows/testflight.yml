@@ -50,7 +50,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: Pods
-          key: pods-${{ hashFiles('Podfile.lock') }}
+          key: pods-v2-${{ hashFiles('Podfile.lock') }}
           restore-keys: pods-
 
       # ── 5. Generate Xcode project ─────────────────────────────────────────
