@@ -110,6 +110,7 @@ jobs:
       # ── 10. Build & Archive via Fastlane ──────────────────────────────────
       - name: Build & Archive
         run: |
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
           xcodebuild \
             -workspace Riot.xcworkspace \
             -scheme Riot \
@@ -117,6 +118,7 @@ jobs:
             -destination "generic/platform=iOS" \
             -archivePath build/ElementFork.xcarchive \
             CODE_SIGN_STYLE=Manual \
+            OTHER_CODE_SIGN_FLAGS="--keychain $KEYCHAIN_NAME" \
             archive
 
       - name: Export IPA
