@@ -19,8 +19,4 @@
 
 #include "Common.xcconfig"
 #include "Pods/Target Support Files/Pods-RiotPods-BroadcastUploadExtension/Pods-RiotPods-BroadcastUploadExtension.release.xcconfig"
-
-PROVISIONING_PROFILE = $(BROADCAST_UPLOAD_EXTENSION_PROVISIONING_PROFILE)
-PROVISIONING_PROFILE_SPECIFIER = $(BROADCAST_UPLOAD_EXTENSION_PROVISIONING_PROFILE_SPECIFIER)
-
 COPY_PHASE_STRIP = NO
