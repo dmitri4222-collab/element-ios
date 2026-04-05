@@ -70,17 +70,26 @@ jobs:
       # ── 8. Install Provisioning Profiles ──────────────────────────────────
       - name: Install provisioning profiles
         env:
-          # Each secret is a base64-encoded .mobileprovision file
           PP_MAIN:       ${{ secrets.PP_MAIN }}
           PP_NSE:        ${{ secrets.PP_NSE }}
           PP_SHARE:      ${{ secrets.PP_SHARE }}
           PP_BROADCAST:  ${{ secrets.PP_BROADCAST }}
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          echo "$PP_MAIN"      | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/main.mobileprovision
-          echo "$PP_NSE"       | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/nse.mobileprovision
-          echo "$PP_SHARE"     | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/share.mobileprovision
-          echo "$PP_BROADCAST" | base64 --decode -o ~/Library/MobileDevice/Provisioning\ Profiles/broadcast.mobileprovision
+
+          install_profile() {
+            echo "$1" | base64 --decode -o /tmp/pp_tmp.mobileprovision
+            UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /dev/stdin \
+              <<< $(security cms -D -i /tmp/pp_tmp.mobileprovision))
+            cp /tmp/pp_tmp.mobileprovision \
+              ~/Library/MobileDevice/Provisioning\ Profiles/"$UUID".mobileprovision
+            echo "Installed: $UUID"
+          }
+
+          install_profile "$PP_MAIN"
+          install_profile "$PP_NSE"
+          install_profile "$PP_SHARE"
+          install_profile "$PP_BROADCAST"
 
       # ── 9. Increment build number (= GitHub run number) ───────────────────
       - name: Set build number
