@@ -13,25 +13,22 @@ concurrency:
 jobs:
   build:
     name: Build & Upload
-    runs-on: macos-15          # Xcode 15, Apple Silicon runner
+    runs-on: macos-15
 
     env:
-      BUNDLE_ID:               org.digital.matrix
-      SCHEME:                  Riot
-      WORKSPACE:               Riot.xcworkspace
-      CONFIGURATION:           Release
-      KEYCHAIN_NAME:           build.keychain
-      KEYCHAIN_PASSWORD:       ${{ secrets.KEYCHAIN_PASSWORD }}
+      SCHEME:            Riot
+      WORKSPACE:         Riot.xcworkspace
+      CONFIGURATION:     Release
+      KEYCHAIN_NAME:     build.keychain
+      KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
 
     steps:
 
-      # ── 1. Checkout ────────────────────────────────────────────────────────
       - name: Checkout (with submodules)
         uses: actions/checkout@v4
         with:
           submodules: recursive
-      
-      # ── 2. Ruby / Bundler / Fastlane ───────────────────────────────────────
+
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -41,11 +38,9 @@ jobs:
       - name: Install Fastlane
         run: gem install fastlane
 
-      # ── 3. Brew tools (xcodegen, etc.) ────────────────────────────────────
       - name: Install Brew dependencies
         run: brew bundle --no-upgrade
 
-      # ── 4. CocoaPods cache ────────────────────────────────────────────────
       - name: Cache CocoaPods
         uses: actions/cache@v4
         with:
@@ -53,27 +48,33 @@ jobs:
           key: pods-v2-${{ hashFiles('Podfile.lock') }}
           restore-keys: pods-
 
-      # ── 5. Generate Xcode project ─────────────────────────────────────────
       - name: XcodeGen
         run: xcodegen generate
 
-      # ── 6. Install Pods ───────────────────────────────────────────────────
       - name: Pod install
         run: pod install --repo-update
 
-   # ── 7. Import Distribution Certificate into temp keychain ─────────────
       - name: Import signing certificate
-        uses: apple-actions/import-codesign-certs@v3
-        with:
-          p12-file-base64: ${{ secrets.DIST_CERT_P12_BASE64 }}
-          p12-password: ${{ secrets.DIST_CERT_P12_PASSWORD }}
-      - name: Allow keychain access
+        env:
+          DIST_CERT_P12_BASE64:    ${{ secrets.DIST_CERT_P12_BASE64 }}
+          DIST_CERT_P12_PASSWORD:  ${{ secrets.DIST_CERT_P12_PASSWORD }}
         run: |
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_NAME"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
+          security list-keychains -d user -s "$KEYCHAIN_NAME" ~/Library/Keychains/login.keychain-db
+          echo "$DIST_CERT_P12_BASE64" | base64 --decode -o /tmp/dist_cert.p12
+          security import /tmp/dist_cert.p12 \
+            -k "$KEYCHAIN_NAME" \
+            -P "$DIST_CERT_P12_PASSWORD" \
+            -T /usr/bin/codesign \
+            -T /usr/bin/xcodebuild
           security set-key-partition-list \
-            -S apple-tool:,apple:,codesign: \
-            -s -k "" \
-            ~/Library/Keychains/login.keychain-db || true 
-      # ── 8. Install Provisioning Profiles ──────────────────────────────────
+            -S apple-tool:,apple: \
+            -s -k "$KEYCHAIN_PASSWORD" \
+            "$KEYCHAIN_NAME"
+          security find-identity -v -p codesigning
+
       - name: Install provisioning profiles
         env:
           PP_MAIN:       ${{ secrets.PP_MAIN }}
@@ -82,10 +83,6 @@ jobs:
           PP_BROADCAST:  ${{ secrets.PP_BROADCAST }}
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          echo "PP_MAIN size: ${#PP_MAIN}"
-          echo "PP_NSE size: ${#PP_NSE}"
-          echo "PP_SHARE size: ${#PP_SHARE}"
-          echo "PP_BROADCAST size: ${#PP_BROADCAST}"
           install_profile() {
             echo "$1" | base64 --decode -o /tmp/pp_tmp.mobileprovision
             UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /dev/stdin \
@@ -94,26 +91,17 @@ jobs:
               ~/Library/MobileDevice/Provisioning\ Profiles/"$UUID".mobileprovision
             echo "Installed: $UUID"
           }
-
           install_profile "$PP_MAIN"
           install_profile "$PP_NSE"
           install_profile "$PP_SHARE"
           install_profile "$PP_BROADCAST"
-          echo "=== Installed profiles ==="
-          for f in ~/Library/MobileDevice/Provisioning\ Profiles/*.mobileprovision; do
-            echo "File: $f"
-            security cms -D -i "$f" > /tmp/profile_decoded.plist
-            /usr/libexec/PlistBuddy -c "Print :Name" /tmp/profile_decoded.plist
-            /usr/libexec/PlistBuddy -c "Print :TeamIdentifier:0" /tmp/profile_decoded.plist
-          done
-      # ── 9. Increment build number (= GitHub run number) ───────────────────
-      - name: Set build number
-        run: |
-          agvtool new-version -all ${{ github.run_number }}
 
-      # ── 10. Build & Archive via Fastlane ──────────────────────────────────
+      - name: Set build number
+        run: agvtool new-version -all ${{ github.run_number }}
+
       - name: Build & Archive
         run: |
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_NAME"
           xcodebuild \
             -workspace Riot.xcworkspace \
             -scheme Riot \
@@ -123,6 +111,7 @@ jobs:
             CODE_SIGN_STYLE=Manual \
             CODE_SIGN_IDENTITY="Apple Distribution" \
             DEVELOPMENT_TEAM=7J4U792NQT \
+            OTHER_CODE_SIGN_FLAGS="--keychain $HOME/Library/Keychains/$KEYCHAIN_NAME-db" \
             archive
 
       - name: Export IPA
@@ -142,7 +131,6 @@ jobs:
             -authenticationKeyIssuerID "$ASC_ISSUER_ID"
 
       - name: Upload to TestFlight
-        if: ${{ env.ASC_KEY_ID != '' }}
         env:
           ASC_KEY_ID:     ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID:  ${{ secrets.ASC_ISSUER_ID }}
@@ -156,12 +144,10 @@ jobs:
             --apiIssuer "$ASC_ISSUER_ID" \
             --privateKeyPath /tmp/asc_key.p8
 
-      # ── 11. Cleanup keychain ───────────────────────────────────────────────
       - name: Cleanup keychain
         if: always()
         run: security delete-keychain "$KEYCHAIN_NAME" || true
 
-      # ── 12. Upload .xcarchive as artifact (optional, for debugging) ────────
       - name: Upload archive artifact
         if: always()
         uses: actions/upload-artifact@v4
