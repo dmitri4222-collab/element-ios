@@ -76,7 +76,10 @@ jobs:
           PP_BROADCAST:  ${{ secrets.PP_BROADCAST }}
         run: |
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-
+          echo "PP_MAIN size: ${#PP_MAIN}"
+          echo "PP_NSE size: ${#PP_NSE}"
+          echo "PP_SHARE size: ${#PP_SHARE}"
+          echo "PP_BROADCAST size: ${#PP_BROADCAST}"
           install_profile() {
             echo "$1" | base64 --decode -o /tmp/pp_tmp.mobileprovision
             UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /dev/stdin \
