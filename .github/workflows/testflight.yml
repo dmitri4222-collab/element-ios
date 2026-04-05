@@ -99,7 +99,6 @@ jobs:
             CODE_SIGN_STYLE=Manual \
             CODE_SIGN_IDENTITY="Apple Distribution" \
             DEVELOPMENT_TEAM=7J4U792NQT \
-            OTHER_CODE_SIGN_FLAGS="--keychain $HOME/Library/Keychains/$KEYCHAIN_NAME-db" \
             archive
 
       - name: Export IPA
