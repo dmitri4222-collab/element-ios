@@ -5,7 +5,7 @@ APPLICATION_GROUP_IDENTIFIER = group.org.digital.matrix
 APPLICATION_SCHEME = element-fork
 
 // Team
-DEVELOPMENT_TEAM = 7J4U792NQT
+DEVELOPMENT_TEAM = 57VK44QF69
 
 // Provisioning profiles
 RIOT_PROVISIONING_PROFILE_SPECIFIER = ElementFork AppStore Distribution
