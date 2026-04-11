@@ -136,14 +136,13 @@ jobs:
           ASC_ISSUER_ID:  ${{ secrets.ASC_ISSUER_ID }}
           ASC_KEY_BASE64: ${{ secrets.ASC_KEY_BASE64 }}
         run: |
-          echo "$ASC_KEY_BASE64" | base64 --decode -o /tmp/asc_key.p8
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "$ASC_KEY_BASE64" | base64 --decode -o ~/.appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8
           xcrun altool --upload-app \
             --type ios \
             --file build/ElementFork/ElementFork.ipa \
             --apiKey "$ASC_KEY_ID" \
-            --apiIssuer "$ASC_ISSUER_ID" \
-            --privateKeyPath /tmp/asc_key.p8
-
+            --apiIssuer "$ASC_ISSUER_ID"
       - name: Cleanup keychain
         if: always()
         run: security delete-keychain "$KEYCHAIN_NAME" || true
