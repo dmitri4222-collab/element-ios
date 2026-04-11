@@ -129,7 +129,10 @@ jobs:
             -authenticationKeyPath /tmp/asc_key.p8 \
             -authenticationKeyID "$ASC_KEY_ID" \
             -authenticationKeyIssuerID "$ASC_ISSUER_ID"
-
+            
+      - name: List export output
+        run: ls -la build/ElementFork/
+        
       - name: Upload to TestFlight
         env:
           ASC_KEY_ID:     ${{ secrets.ASC_KEY_ID }}
