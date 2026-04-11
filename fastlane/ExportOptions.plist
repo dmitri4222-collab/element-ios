@@ -10,7 +10,7 @@
 
   <!-- Your Apple Developer Team ID — replace with actual value -->
   <key>teamID</key>
-  <string>7J4U792NQT</string>
+  <string>57VK44QF69</string>
 
   <!-- Manual signing -->
   <key>signingStyle</key>
