@@ -143,7 +143,7 @@ jobs:
           echo "$ASC_KEY_BASE64" | base64 --decode -o ~/.appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8
           xcrun altool --upload-app \
             --type ios \
-            --file build/ElementFork/ElementFork.ipa \
+            --file build/ElementFork/Element.ipa \
             --apiKey "$ASC_KEY_ID" \
             --apiIssuer "$ASC_ISSUER_ID"
       - name: Cleanup keychain
