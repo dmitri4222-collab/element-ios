@@ -31,7 +31,7 @@
     <key>org.digital.matrix.shareextension</key>
     <string>ElementFork Share AppStore Distribution</string>
 
-    <key>org.digital.matrix.broadcast</key>
+    <key>org.digital.matrix.broadcastUploadExtension</key>
     <string>ElementFork Broadcast AppStore Distribution</string>
   </dict>
 
