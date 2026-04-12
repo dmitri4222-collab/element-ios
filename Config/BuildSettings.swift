@@ -102,7 +102,7 @@ final class BuildSettings: NSObject {
     static let serverConfigDefaultIdentityServerUrlString = ""
         
     static var serverConfigSygnalAPIUrlString: String {
-        MDMSettings.serverConfigSygnalAPIUrlString ?? "https://12-vm.mooo.com/_matrix/push/v1/notify"
+        MDMSettings.serverConfigSygnalAPIUrlString ?? "https://matrix.digital-res.org/_matrix/push/v1/notify"
     }
     
     // MARK: - Legal URLs
