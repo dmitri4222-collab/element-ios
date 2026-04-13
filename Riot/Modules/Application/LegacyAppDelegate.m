@@ -1847,8 +1847,7 @@ NSString *const AppDelegateUniversalLinkDidChangeNotification = @"AppDelegateUni
             account.mxSession.roomSummaryUpdateDelegate = eventFormatter;
             
             // Set the push gateway URL.
-            NSString *wellKnownPushGateway1 = account.mxSession.homeserverWellknown.pushGateway.url;
-            account.pushGatewayURL = wellKnownPushGateway1 ?: BuildSettings.serverConfigSygnalAPIUrlString;
+            account.pushGatewayURL = BuildSettings.serverConfigSygnalAPIUrlString;
 
             BOOL isPushRegistered = self.pushNotificationService.isPushRegistered;
 
@@ -1947,8 +1946,7 @@ NSString *const AppDelegateUniversalLinkDidChangeNotification = @"AppDelegateUni
             // Set this url in the existing accounts when it is undefined.
             if (!account.pushGatewayURL)
             {
-                NSString *wellKnownPushGateway2 = account.mxSession.homeserverWellknown.pushGateway.url;
-                account.pushGatewayURL = wellKnownPushGateway2 ?: BuildSettings.serverConfigSygnalAPIUrlString;
+                account.pushGatewayURL = BuildSettings.serverConfigSygnalAPIUrlString;
             }
         }
         
