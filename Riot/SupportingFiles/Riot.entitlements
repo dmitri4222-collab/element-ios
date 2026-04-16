@@ -4,8 +4,6 @@
 <dict>
 	<key>aps-environment</key>
 	<string>production</string>
-	<key>com.apple.developer.pushkit</key>
-	<true/>
 	<key>com.apple.security.application-groups</key>
 	<array>
 		<string>$(APPLICATION_GROUP_IDENTIFIER)</string>
