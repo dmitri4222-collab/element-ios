@@ -113,7 +113,7 @@ static NSString *const kMXAppGroupID = @"group.org.matrix";
         enableBubbleComponentLinkDetection = NO;
         firstURLDetectionIgnoredHosts = @[[NSURL URLWithString:kMXMatrixDotToUrl].host];
         
-        _allowPushKitPushers = YES;
+        _allowPushKitPushers = NO;
         _notificationBodyLocalizationKey = @"MESSAGE";
         enableCallKit = YES;
         
