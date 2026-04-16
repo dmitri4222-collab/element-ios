@@ -199,18 +199,17 @@ Matrix session observer used to detect new opened sessions.
         {
             MXLogDebug(@"   - %@", pusher.appId);
             
-        }
-        // We do not want anymore PushKit pushers the app used to use
+            // We do not want anymore PushKit pushers the app used to use
             if ([pusher.appId isEqualToString:BuildSettings.pushKitAppIdProd]
                 || [pusher.appId isEqualToString:BuildSettings.pushKitAppIdDev])
             {
                 [self removePusher:pusher inSession:session];
             }
+        }
     } failure:^(NSError *error) {
         MXLogDebug(@"[PushNotificationService][Push] checkPushKitPushers: Error: %@", error);
     }];
 }
-
 
 #pragma mark - Private Methods
 
